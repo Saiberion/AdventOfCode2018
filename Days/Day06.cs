@@ -23,7 +23,7 @@ namespace Days
         public Day06()
         {
             Part1Text = "biggest area";
-            Part2Text = "First duplicate frequency";
+            Part2Text = "shortest distance";
 
             Load("inputs/day06.txt");
         }
