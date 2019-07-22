@@ -11,7 +11,7 @@ namespace Days
         public Day09()
         {
             Part1Text = "Winning score";
-            Part2Text = "";
+            Part2Text = "Winning score (more marbles)";
 
             Load("inputs/day09.txt");
         }
