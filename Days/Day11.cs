@@ -58,14 +58,25 @@ namespace Days
             {
                 for (int x = 0; x < grid.GetLength(0) - (squaresize - 1); x++)
                 {
-                    int power = 0;
+                    // power is now sum of elements between (0, 0) and bottom right corner of the target square
+                    int power = grid[x + squaresize - 1, y + squaresize - 1];
 
-                    for(int y1 = 0; y1 < squaresize; y1++)
+                    // Remove elements between (0, 0) and (x-1, y+squaresize-1)
+                    if (x > 0)
                     {
-                        for (int x1 = 0; x1 < squaresize; x1++)
-                        {
-                            power += grid[x + x1, y + y1];
-                        }
+                        power -= grid[x - 1, y + squaresize - 1];
+                    }
+
+                    // Remove elements between (0, 0) and (x+squaresize-1, y-1)
+                    if (y > 0)
+                    {
+                        power -= grid[x + squaresize - 1, y - 1];
+                    }
+
+                    // Add grid[x-1][y-1] as elements between (0, 0) and (x-1, y-1) are subtracted twice
+                    if ((x > 0) && (y > 0))
+                    {
+                        power += grid[x - 1, y - 1];
                     }
 
                     if (maxPower < power)
@@ -99,15 +110,46 @@ namespace Days
             return result;
         }
 
+        int[,] GetSumGrid(int[,] grid)
+        {
+            int[,] sum = new int[grid.GetLength(0), grid.GetLength(1)];
+            // Copy first row of grid[,] to sum[,] 
+            for (int i = 0; i < grid.GetLength(1); i++)
+            {
+                sum[0, i] = grid[0, i];
+            }
+
+            // Do column wise sum 
+            for (int i = 1; i < grid.GetLength(0); i++)
+            {
+                for (int j = 0; j < grid.GetLength(1); j++)
+                {
+                    sum[i, j] = grid[i, j] + sum[i - 1, j];
+                }
+            }
+
+            // Do row wise sum 
+            for (int i = 0; i < grid.GetLength(0); i++)
+            {
+                for (int j = 1; j < grid.GetLength(1); j++)
+                {
+                    sum[i, j] += sum[i, j - 1];
+                }
+            }
+
+            return sum;
+        }
+
         override public void Solve()
         {
             int[,] grid = GetFilledGrid(int.Parse(Input[0]));
+            int[,] sum = GetSumGrid(grid);
 
-            int[] highestPowerCell = GetHighestPowerCells(grid, 3);
-            //int[] highestPowerCellSquare = GetHighestPowerCellsSquare(grid);
+            int[] highestPowerCell = GetHighestPowerCells(sum, 3);
+            int[] highestPowerCellSquare = GetHighestPowerCellsSquare(sum);
 
             Part1Solution = string.Format("{0},{1}", highestPowerCell[0], highestPowerCell[1]);
-            //Part2Solution = string.Format("{0},{1},{2}", highestPowerCellSquare[0], highestPowerCellSquare[1], highestPowerCellSquare[2]);
+            Part2Solution = string.Format("{0},{1},{2}", highestPowerCellSquare[0], highestPowerCellSquare[1], highestPowerCellSquare[2]);
         }
     }
 }
